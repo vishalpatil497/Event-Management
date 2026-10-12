@@ -1,0 +1,28 @@
+{
+  "name": "gatherly-client",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "lucide-react": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  },
+  "description": "Gatherly is a production-minded MERN monorepo starter for discovering, submitting, moderating, and booking events. The client currently includes a polished, responsive product experience with local demo state so the flows are immediately explorable; the server contains the typed API boundaries and Mongoose model foundation for wiring MongoDB and JWT auth.",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

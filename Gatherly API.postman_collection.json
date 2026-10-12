@@ -1,0 +1,472 @@
+{
+  "info": {
+    "name": "Gatherly - Event Management API",
+    "description": "Complete API collection for the Gatherly Event Management platform (MERN + TypeScript).\n\nAuth uses httpOnly cookies (accessToken). After a successful login, the cookie is set automatically by Postman's cookie jar for subsequent requests.\n\nEnvironment Variables used:\n- {{baseUrl}} - e.g. http://localhost:4000\n- {{eventId}} - Event ObjectId\n- {{bookingId}} - Booking ObjectId",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "schemaVersion": "2.1.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000",
+      "type": "string"
+    },
+    {
+      "key": "eventId",
+      "value": "REPLACE_WITH_EVENT_ID",
+      "type": "string"
+    },
+    {
+      "key": "bookingId",
+      "value": "REPLACE_WITH_BOOKING_ID",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "health"]
+            },
+            "description": "Check if the API server is running."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories"]
+            },
+            "description": "Get all active event categories with event counts."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Register a new user. Account is created with emailVerified=false. A verification email is sent. No auth cookie is set until the user verifies their email."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login with email and password. Sets an httpOnly accessToken cookie on success.\n\nReturns 403 with code=EMAIL_UNVERIFIED if the user has not verified their email."
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            },
+            "description": "Logout the current user by clearing the accessToken cookie."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"REPLACE_WITH_VERIFICATION_TOKEN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/verify-email",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "verify-email"]
+            },
+            "description": "Verify a user's email using the token from the verification email.\n\n- 200: Verified successfully\n- 400 code=invalid_token: Token not found or invalid\n- 400 code=already_used: Token already consumed\n- 410 code=expired: Token has expired"
+          },
+          "response": []
+        },
+        {
+          "name": "Resend Verification Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/resend-verification",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "resend-verification"]
+            },
+            "description": "Request a new verification email. Always returns a generic 200 message (does not reveal whether the email exists).\n\nRate limits:\n- 1 request per IP per minute\n- 3 requests per email per hour\n\nReturns 429 if rate limited."
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "forgot-password"]
+            },
+            "description": "Request a password reset email. Always returns a generic message (does not reveal whether the email exists)."
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"REPLACE_WITH_RESET_TOKEN\",\n  \"password\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "reset-password"]
+            },
+            "description": "Reset password using the token from the password reset email. Sets auth cookie on success."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User (Me)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            },
+            "description": "Get the currently authenticated user's profile. Requires login (cookie)."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile (Name)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            },
+            "description": "Update the current user's display name. Requires login (cookie)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Get Events (Discover)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events?page=1&limit=20&q=&category=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events"],
+              "query": [
+                { "key": "page", "value": "1", "description": "Page number (default 1)" },
+                { "key": "limit", "value": "20", "description": "Items per page (max 100)" },
+                { "key": "q", "value": "", "description": "Search query (title, category, city, organizer)" },
+                { "key": "category", "value": "", "description": "Filter by category name" }
+              ]
+            },
+            "description": "Get paginated list of approved (public) events with search and category filter."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/mine?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events", "mine"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            },
+            "description": "Get events created by the current user. Requires login (cookie)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Event By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events/{{eventId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events", "{{eventId}}"]
+            },
+            "description": "Get a single approved event by its ObjectId."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Tech Conference 2026\",\n  \"category\": \"Technology\",\n  \"date\": \"2026-12-15\",\n  \"location\": \"Grand Ballroom\",\n  \"city\": \"Bengaluru\",\n  \"description\": \"A practical evening for founders, engineers, and product builders to exchange ideas and learn from local operators.\",\n  \"organizer\": \"Gatherly Community\",\n  \"totalSeats\": 180,\n  \"price\": 1299,\n  \"startTime\": \"10:00\",\n  \"endTime\": \"17:00\",\n  \"image\": \"https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1400&q=85\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/events",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events"]
+            },
+            "description": "Create a new event. Status is set to PENDING (requires admin approval). Requires login (cookie)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"{{eventId}}\",\n  \"numberOfSeats\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings"]
+            },
+            "description": "Book seats for an event. Uses MongoDB transactions. Requires login (cookie)."
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/{{bookingId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "{{bookingId}}", "cancel"]
+            },
+            "description": "Cancel a booking and return seats to the event. Uses MongoDB transactions. Requires login (cookie)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Bookings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/my?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "my"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            },
+            "description": "Get paginated list of the current user's bookings. Requires login (cookie)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Admin Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "dashboard"]
+            },
+            "description": "Get admin dashboard stats (users, events, bookings, revenue, recent bookings). Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pending Events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/events/pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "events", "pending"]
+            },
+            "description": "Get all events pending admin approval. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Events (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/events?page=1&limit=20&status=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "events"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "status", "value": "", "description": "Filter: PENDING | APPROVED | REJECTED" }
+              ]
+            },
+            "description": "Get all events with optional status filter. Includes submitter name/email. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users"]
+            },
+            "description": "Get all registered users. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Bookings (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "bookings"]
+            },
+            "description": "Get recent bookings (last 100) with attendee and event details. Requires ADMIN role."
+          },
+          "response": []
+        },
+        {
+          "name": "Review Event (Approve/Reject)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"APPROVED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/events/{{eventId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "events", "{{eventId}}", "status"]
+            },
+            "description": "Approve or reject a pending event. Status: APPROVED | REJECTED. Requires ADMIN role."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

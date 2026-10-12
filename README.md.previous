@@ -1,0 +1,55 @@
+# Gatherly — Event Management SaaS
+
+Gatherly is a production-minded MERN monorepo starter for discovering, submitting, moderating, and booking events. The client currently includes a polished, responsive product experience with local demo state so the flows are immediately explorable; the server contains the typed API boundaries and Mongoose model foundation for wiring MongoDB and JWT auth.
+
+## Architecture
+
+```text
+client (React + Vite + TypeScript)
+  pages / components / services / types
+          |
+          | REST + httpOnly auth cookies
+          v
+server (Express + TypeScript)
+  routes -> controllers -> services -> repositories/models
+          |
+          v
+       MongoDB
+```
+
+### Relationships
+
+```text
+User 1 ──── * Event       (createdBy)
+User 1 ──── * Booking     (userId)
+Event 1 ─── * Booking     (eventId)
+User 1 ──── * Notification (userId)
+Category 1 ─ * Event       (category slug)
+```
+
+- `Event.status` is `PENDING | APPROVED | REJECTED`; only approved events are public.
+- `Booking` creation must decrement `Event.availableSeats` with an atomic conditional update.
+- Admin-only routes are protected server-side with `requireAuth` and `requireRole('ADMIN')`.
+- The client stores only demo session state in localStorage; production auth belongs in secure httpOnly cookies.
+
+## Getting started
+
+```bash
+npm install
+npm run dev
+```
+
+The client runs on `http://localhost:5173`. The server can be started with `npm run dev:server` after configuring `server/.env` from `.env.example`.
+
+## Demo accounts
+
+- User: `maya@gatherly.demo` / `password`
+- Admin: `admin@gatherly.demo` / `password`
+
+## Production checklist
+
+- Configure MongoDB and JWT secrets in `server/.env`.
+- Replace the demo repository with Mongo-backed repositories.
+- Add an object-storage upload adapter for event imagery.
+- Put API and client behind HTTPS, with a strict CORS origin and secure cookies.
+- Add Redis-backed rate limiting and a payment provider before accepting real money.
